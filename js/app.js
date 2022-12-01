@@ -26,60 +26,21 @@
 const navbar__menu = document.getElementsByTagName('nav');
 const navbar__list = document.getElementById('navbar__list');
 const sections = document.querySelectorAll('section');
-const toTop__btn = document.getElementById('toTop__btn');
-let currentActiveElem = document.querySelector('.active');
+const toTop__arrow = document.getElementById('toTop__arrow');
 
 /**
  * End Global Variables
  * Start Helper Functions
- *
-*/
-
-//function createNavList() {
-
-
-/**
- * End Helper Functions
-
-
- * Begin Main Functions
  *
 */
 
 // build the nav
-
-
-// Add class 'active' to section when near top of viewport
-
-
 // Scroll to anchor ID using scrollTO event
 
-
-/**
- * End Main Functions
- * Begin Events
- *
-*/
-
-// Build menu
-
-// Scroll to section on link click
-
-// Set sections as active
-
-
-
-
-///
-/**
- * End Global Variables
- * Start Helper Functions
- *
- */
-
-const buildNavList = () => {
+function createNavList() {
     for (section of sections) {
         const currentSectionId = section.getAttribute('id');
+        // build the navigation bar
         if (section.attributes['data-nav']) {
             const currentSectionName = section.getAttribute('data-nav');
             let link = document.createElement('a');
@@ -88,13 +49,10 @@ const buildNavList = () => {
             link.classList.add('menu__link');
             link.setAttribute('id', `${currentSectionId}__link`);
             link.setAttribute('href', `#${currentSectionId}`);
-            if (section.classList.contains('active')) {
-                link.classList.add('active');
-            }
             navbar__item.setAttribute('class', 'navbar__item');
             navbar__item.onclick = function(e) {
                 e.preventDefault();
-                // Scroll to anchor ID using scrollIntoView event
+                // Scroll to anchor ID using scrollTO event
                 document.querySelector(`#${currentSectionId}`).scrollIntoView({
                     behavior: 'smooth'
                 });
@@ -105,64 +63,56 @@ const buildNavList = () => {
     }
 }
 
-const isElementInViewPort = (element) => {
-    let rect = element.getBoundingClientRect();
-
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
-    );
-}
-
-const showCurrentActiveSection = () => {
+// Add class 'active' to section when near top of viewport
+function showTheActiveSection() {
     let navbar__list__links = document.querySelectorAll('nav ul li a');
     for (link of navbar__list__links) {
         let section = document.querySelector(link.hash);
-        if (section.classList.contains('active') && section === currentActiveElem) {
+        let rect = section.getBoundingClientRect();
 
+        // store true if the element is near the top of the viewport, false otherwise
+        let isElementInViewPort = rect.top >= 0 &&    rect.top <=
+            0.4 * (window.innerHeight || document.documentElement.clientHeight);
+
+        // if the section is in the viewport -- add 'active' class to section and link
+        if (isElementInViewPort){
+            section.classList.add('active');
             link.classList.add('active');
-        } else {
+        }
+        // otherwise -- remove 'active' class to section and link
+        else{
             section.classList.remove('active');
             link.classList.remove('active');
-            if (isElementInViewPort(section)) {
-                // Add class 'active' to section when near top of viewport
-                currentActiveElem.classList.add('active');
-                link.classList.add('active');
-                currentActiveElem = section;
-            }
         }
-    }
+   }
 }
 
-const scrollToTop = () => {
+function scrollToTop() {
     if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-        toTop__btn.style.display = "block";
-    } else {
-        toTop__btn.style.display = "none";
+        toTop__arrow.style.display = "block";
+    }
+    else {
+        toTop__arrow.style.display = "none";
     }
 }
 
-const toTop = () => {
-window.scrollTo({top: 0, behavior: 'smooth'});
-
+function toTop() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 /**
  * End Helper Functions
  * Begin Main Functions
  *
- */
+*/
 
 function init() {
-    // build the nav
-    buildNavList();
-    toTop__btn.addEventListener("click", toTop);
+    createNavList();
+    toTop__arrow.addEventListener("click", toTop);
 }
 
 function onScroll() {
-    showCurrentActiveSection();
+    showTheActiveSection();
     scrollToTop();
 }
 
@@ -170,7 +120,7 @@ function onScroll() {
  * End Main Functions
  * Begin Events
  *
- */
+*/
 
 document.addEventListener('DOMContentLoaded', init);
 window.addEventListener('scroll', onScroll);
